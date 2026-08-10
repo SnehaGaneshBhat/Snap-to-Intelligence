@@ -1,0 +1,144 @@
+{
+  "entries": [
+    {
+      "image_filename": "test_img_1.png",
+      "brand": "ALSTOM",
+      "model_number": "GL316 WITH CR",
+      "serial_number": null,
+      "specs": {
+        "rated_voltage": "420 kV",
+        "normal_current": "3150 A",
+        "frequency": "50 Hz"
+      }
+    },
+    {
+      "image_filename": "test_img_2.png",
+      "brand": "Motors & Drives International",
+      "model_number": "EPT0754",
+      "serial_number": "0133",
+      "specs": {
+        "horsepower": "75",
+        "speed_rpm": "1780",
+        "frequency_phase": "3/60CYCLE",
+        "insulation_class": "F",
+        "frame_size": "365T"
+      }
+    },
+    {
+      "image_filename": "test_img_3.png",
+      "brand": "KDS",
+      "model_number": "ZQS48-4.0B-T",
+      "serial_number": null,
+      "specs": {
+        "voltage_rating": "48 V",
+        "rated_output": "4.0Kw",
+        "field_current": "13A",
+        "armature_current": "105A",
+        "rated_speed": "2800 r/min"
+      }
+    },
+    {
+      "image_filename": "test_img_4.png",
+      "brand": "SIEMENS",
+      "model_number": "1LAO2864SE41",
+      "serial_number": null,
+      "specs": {
+        "horsepower_rating": "30.00",
+        "voltage_rating": "460 V",
+        "current_rating": "34.9 A",
+        "frequency": "60 Hz",
+        "frame_size": "286T",
+        "insulation_class": "F"
+      }
+    },
+    {
+      "image_filename": "test_img_5.png",
+      "brand": "ABB",
+      "model_number": "TNOSCT-100/11PNS UNI",
+      "serial_number": "1LPL525913",
+      "specs": {
+        "rated_power": "100 kV\u00b7A",
+        "number_of_phases": "3",
+        "lv_rated_voltage": "415 V",
+        "rated_frequency": "50 Hz",
+        "connection_symbol": "Dyn11",
+        "total_mass": "463 kg"
+      }
+    },
+    {
+      "image_filename": "test_img_6.png",
+      "brand": "GRUNDFOS",
+      "model_number": "SV.80.125.200.2.58H.S.278.G.N.D",
+      "serial_number": null,
+      "specs": {
+        "max_head": "70.9 m",
+        "max_flow_rate": "45 l/s",
+        "ip_rating": "IP68",
+        "frequency": "50 Hz",
+        "weight": "410 kg",
+        "power_factor": "0.87"
+      }
+    },
+    {
+      "image_filename": "test_img_7.png",
+      "brand": "AQUA-TON",
+      "model_number": null,
+      "serial_number": null,
+      "specs": {
+        "frequency": "50 Hz",
+        "speed": "2880 RPM.",
+        "insulation_class": "E"
+      }
+    },
+    {
+      "image_filename": "test_img_8.png",
+      "brand": "tubi",
+      "model_number": null,
+      "serial_number": null,
+      "specs": {
+        "voltage": "240 VOLT",
+        "frequency": "50 Hz",
+        "speed": "2800 RPM.",
+        "insulation_class": "B",
+        "enclosure_type": "TEFC"
+      }
+    },
+    {
+      "image_filename": "test_img_9.png",
+      "brand": "MARI",
+      "model_number": null,
+      "serial_number": null,
+      "specs": {
+        "phase": "1 PHASE",
+        "voltage_rating": "240 VOLT",
+        "frequency": "50 Hz",
+        "speed": "2800 RPM.",
+        "insulation_class": "B"
+      }
+    },
+    {
+      "image_filename": "test_img_10.png",
+      "brand": "sabar",
+      "model_number": null,
+      "serial_number": null,
+      "specs": {
+        "phase": "1 PHASE",
+        "voltage": "240 VOLT",
+        "frequency": "50 Hz",
+        "speed": "2800 RPM",
+        "insulation_class": "B"
+      }
+    },
+    {
+      "image_filename": "test_img_11.png",
+      "brand": "DELL",
+      "model_number": "LA90PM111",
+      "serial_number": null,
+      "specs": {
+        "power_rating": "90W",
+        "output_rating": "DC 19.5V ⎓ 4.62A",
+        "country_of_origin": "Made in China"
+      }
+    }
+  ]
+}
