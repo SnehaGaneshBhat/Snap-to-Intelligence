@@ -1,0 +1,2 @@
+Manufacturer: https://octopart.com/datasheet/siemens/Q120
+Distributor: https://www.mouser.com/en/ProductDetail/Siemens/US2Q120?qs=jcD%2FCkGBYeOdQHpgJ5JLKw%3D%3D

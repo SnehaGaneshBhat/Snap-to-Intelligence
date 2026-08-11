@@ -1,0 +1,2 @@
+Manufacturer: https://omronfs.omron.com/en_US/ecb/products/pdf/en-g2r.pdf
+Distributor: https://www.mouser.in/en/ProductDetail/Omron-Automation-and-Safety/G2R-1-S-DC24S?qs=CX134%252BdLMDG90VT8wgszEQ%3D%3D

@@ -1,0 +1,2 @@
+Manufacturer: https://sieportal.siemens.com/en-ww/products-services/detail/3RT2015-1AP01?tree=CatalogTree
+Distributor: https://docs.rs-online.com/617a/0900766b813eade2.pdf

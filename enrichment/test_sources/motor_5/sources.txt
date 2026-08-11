@@ -1,0 +1,2 @@
+Manufacturer: https://mall.industry.siemens.com/goos/catalog/Pages/mmpdata.ashx?lang=en&MLFB1=3RT2025-1AP00
+Distributor: https://assets.rs-online.com/image/upload/v1699366376/Datasheets/15e8378af5da7397a6d98d1ba1eff85b.pdf
