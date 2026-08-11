@@ -152,6 +152,36 @@ Files in this folder
 
 
 
+Shared Folder
+
+The /shared directory contains the schema contract and mock data used across all components:
+
+
+
+schema.json  
+
+
+
+Defines the canonical product profile schema.
+
+Keys are stable and must not be changed without team consensus.
+
+Person A (extraction), Person B (enrichment), and Person C (frontend) all build against this schema.
+
+
+
+mocks/mock\_products.json  
+
+
+
+Contains sample product profiles for testing and UI development.
+
+Used by Person C to build the frontend before real backend integration.
+
+Used by Person B to validate enrichment logic against schema compliance.
+
+Provides a safe dataset when live scraping is unavailable.
+
 
 
 Integration Notes
