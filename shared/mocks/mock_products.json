@@ -1,0 +1,93 @@
+{
+  "_instructions": "Add one entry per test image. image_filename must match the actual file in test_images/. Fill in fields you can visually confirm from the product's official page. Delete this _instructions key before running eval.py.",
+  "entries": [
+    {
+      "image_filename": "breaker_01.jpg",
+      "brand": "Siemens",
+      "model_number": "QP120",
+      "serial_number": null,
+      "specs": {
+        "voltage_rating": "120/240V",
+        "current_rating": "20A"
+      }
+    },
+    {
+      "image_filename": "motor_02.jpg",
+      "brand": "Siemens",
+      "model_number": "3RV2011-1AA10",
+      "serial_number": null,
+      "specs": {
+        "voltage_rating": "690V",
+        "current_rating": "1.6A"
+      }
+    },
+    {
+      "image_filename": "motor_03.jpg",
+      "brand": "Omron",
+      "model_number": "G2R-1 DC24",
+      "serial_number": null,
+      "specs": {
+        "coil_voltage": "24V DC",
+        "contact_rating": "10A"
+      }
+    },
+    {
+      "image_filename": "motor_04.jpg",
+      "brand": "ABB",
+      "model_number": "A9-30-10",
+      "serial_number": null,
+      "specs": {
+        "voltage_rating": "690V",
+        "current_rating": "25A",
+        "auxiliary_contacts": "1 NO"
+      }
+    },
+    {
+      "image_filename": "motor_05.jpg",
+      "brand": "Siemens",
+      "model_number": "3RT2025-1AP00",
+      "serial_number": null,
+      "specs": {
+        "voltage_rating": "690V",
+        "current_rating": "17A",
+        "power_rating": "7.5kW at 400V",
+        "auxiliary_contacts": "1 NO + 1 NC"
+      }
+    },
+    {
+      "image_filename": "motor_06.jpg",
+      "brand": "Siemens",
+      "model_number": "5SY6106-7",
+      "serial_number": null,
+      "specs": {
+        "voltage_rating": "230V",
+        "current_rating": "6A",
+        "type": "MCB"
+      }
+    },
+    {
+      "image_filename": "motor_07.jpg",
+      "brand": "Siemens",
+      "model_number": "3RT1015-1AP01",
+      "serial_number": null,
+      "specs": {
+        "voltage_rating": "230V AC",
+        "current_rating": "7A",
+        "power_rating": "3kW at 400V",
+        "auxiliary_contacts": "1 NO"
+      }
+    },
+    {
+      "image_filename": "motor_08.jpg",
+      "brand": "Omron",
+      "model_number": "G2R-1-SN230AC",
+      "serial_number": null,
+      "specs": {
+        "coil_voltage": "230V AC",
+        "contact_rating": "10A",
+        "contact_type": "SPDT",
+        "contact_material": "Silver"
+      }
+    }
+  ]
+}

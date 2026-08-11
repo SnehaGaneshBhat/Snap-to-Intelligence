@@ -1,0 +1,23 @@
+{
+  "_instructions": "Add one entry per test image. image_filename must match the actual file in test_images/. Fill in fields you can visually confirm from the product's official page. Delete this _instructions key before running eval.py.",
+
+  "entries": [
+    {
+      "image_filename": "breaker_01.jpg",
+      "brand": "Siemens",
+      "model_number": "QP120",
+      "serial_number": null,
+      "specs": {
+        "voltage_rating": "120/240V",
+        "current_rating": "20A"
+      }
+    },
+    {
+      "image_filename": "example_02.jpg",
+      "brand": "REPLACE_ME",
+      "model_number": "REPLACE_ME",
+      "serial_number": null,
+      "specs": {}
+    }
+  ]
+}
