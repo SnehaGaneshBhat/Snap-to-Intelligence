@@ -12,11 +12,12 @@ import json
 import re
 import time
 from datetime import datetime, timezone
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 # MODEL_NAME is read from .env so you can switch models without editing code.
 # Set GEMINI_MODEL=gemini-flash-lite-latest in .env for cheap dev/testing (high daily quota, lower accuracy)
@@ -43,6 +44,15 @@ Examples of INCORRECT extraction (do NOT do this):
 Rule of thumb: only remove words that are clearly a field-name/category label (like "RATED VOLT", "FIELD CURRENT"). NEVER remove units (V, A, Hz, kV, kg, kW, rpm, etc.) — units are always part of the raw_value, not the label.
 
 Extract ONLY information that is ACTUALLY VISIBLE in the image — do not guess or infer specs that aren't printed. But if it IS printed, no matter how minor, include it.
+
+IDENTITY FIELD RULES:
+- "brand" is the product brand or logo name printed on the label.
+- If a separate legal manufacturer/company name is printed, keep the brand in "brand" and add the company as a visible spec with field_name "manufacturer".
+- "model_number" is the exact product identifier printed next to labels such as MODEL, MODEL NO., ORDER NO., CATALOG NO., CAT. NO., PART NO., or TYPE NO. For industrial equipment, an explicit order/catalog/part number is the model_number used to identify the product.
+- Do not use a product series, product description, electrical rating, address, or company registration number as the model_number.
+- "serial_number" is only a value explicitly identified by SERIAL, SERIAL NO., S/N, or SN.
+- Preserve identity codes exactly as printed, including letters, digits, hyphens, slashes, periods, and spaces. Pay special attention to similar characters such as O/0, I/1, and S/5.
+- If no explicit model/part/order/catalog identifier or serial number is visible, return null. Never invent one.
 
 Return ONLY a JSON object (no markdown fences, no explanation text) in this exact structure:
 
@@ -93,14 +103,12 @@ def extract_from_image(image_path: str) -> dict:
         so the API layer can handle it gracefully.
     """
     try:
-        image_file = genai.upload_file(image_path)
-        model = genai.GenerativeModel(
-            MODEL_NAME,
-            generation_config=genai.GenerationConfig(
-                temperature=0,
-                top_p=1,
-                top_k=1
-            )
+        image_file = client.files.upload(file=image_path)
+
+        generation_config = types.GenerateContentConfig(
+            temperature=0,
+            top_p=1,
+            top_k=1
         )
 
         # Retry with backoff for transient rate limits (per-minute caps).
@@ -112,7 +120,11 @@ def extract_from_image(image_path: str) -> dict:
         last_error = None
         for attempt in range(max_retries):
             try:
-                response = model.generate_content([EXTRACTION_PROMPT, image_file])
+                response = client.models.generate_content(
+                    model=MODEL_NAME,
+                    contents=[EXTRACTION_PROMPT, image_file],
+                    config=generation_config,
+                )
                 break
             except Exception as api_err:
                 last_error = api_err

@@ -136,11 +136,8 @@ def _import_enrichment_producer():
     """
     Find something that turns A's extraction into B's `enrichment_output`.
 
-    B's resolve/score loop currently lives inside enrich.py's `if __name__ ==
-    "__main__"` block, so there is no importable function that produces it yet
-    (his own build_full_profile is the only exported entry point). We look for
-    the likely names anyway: the day he lifts that loop into a function, this
-    picks it up with no change here.
+    Person B exposes this as enrich_from_extraction(). The alternative names
+    remain for compatibility if the entry point is renamed later.
     """
     candidates = (
         "enrich_from_extraction",

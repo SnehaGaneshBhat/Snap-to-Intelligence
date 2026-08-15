@@ -14,11 +14,11 @@ import re
 import os
 import pytesseract
 from PIL import Image
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 # Windows users: if you skipped adding Tesseract to your system PATH,
 # uncomment the line below and point it at your actual install location:
@@ -65,8 +65,10 @@ def extract_via_ocr_fallback(image_path: str) -> dict:
         if not raw_text.strip():
             return {"extracted_fields": [], "error": "OCR found no text in image"}
 
-        model = genai.GenerativeModel("gemini-flash-lite-latest")
-        response = model.generate_content(STRUCTURE_PROMPT.format(ocr_text=raw_text))
+        response = client.models.generate_content(
+            model="gemini-flash-lite-latest",
+            contents=STRUCTURE_PROMPT.format(ocr_text=raw_text),
+        )
         parsed = json.loads(_strip_json_fences(response.text))
 
         extracted_fields = []
