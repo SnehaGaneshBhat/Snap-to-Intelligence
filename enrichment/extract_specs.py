@@ -95,11 +95,11 @@ def extract_specs_from_text(raw_text, source_type, source_reference):
         materials = "Plastic"
 
     # Certifications
-    if "UL" in raw_text:
+    if re.search(r"\bUL\b", raw_text, re.IGNORECASE):
         certifications = "UL"
-    elif "CE" in raw_text:
+    elif re.search(r"\bCE\b", raw_text, re.IGNORECASE):
         certifications = "CE"
-    ip_match = re.search(r"(IP\d{2})", raw_text)
+    ip_match = re.search(r"\b(IP\d{2})\b", raw_text, re.IGNORECASE)
     if ip_match:
         certifications = ip_match.group(1)
 
@@ -107,18 +107,6 @@ def extract_specs_from_text(raw_text, source_type, source_reference):
     temp_match = re.search(r"(-?\d+\s*°C\s*to\s*-?\d+\s*°C)", raw_text)
     if temp_match:
         operating_conditions = temp_match.group(1)
-
-    freq_match = re.search(r"(\d{2,3}\s*/\s*\d{2,3}\s*Hz|\d{2,3}\s*Hz)", raw_text, re.IGNORECASE)
-    if freq_match:
-        operating_conditions = freq_match.group(1)
-
-    power_match = re.search(r"(\d+\s*(?:W|kW))", raw_text, re.IGNORECASE)
-    if power_match:
-        operating_conditions = power_match.group(1)
-
-    ka_match = re.search(r"(\d+\s*kA)", raw_text, re.IGNORECASE)
-    if ka_match:
-        operating_conditions = ka_match.group(1)
 
     # Compatible products
     comp_match = re.search(r"compatible with ([\w\s-]+)", raw_text.lower())
