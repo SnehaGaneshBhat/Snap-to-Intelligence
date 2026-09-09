@@ -1,122 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const API = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000'
+const label = (v = '') => v.replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase())
+const date = v => v ? new Date(v).toLocaleString() : '—'
+function Status({ status }) { return <span className={`status ${status}`}>{status === 'processing' ? '◌ Processing' : label(status)}</span> }
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+function Camera({ captured, close }) {
+  const video = useRef(null), canvas = useRef(null); const [error, setError] = useState('')
+  useEffect(() => { let stream; navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'environment' } }).then(s => { stream = s; video.current.srcObject = s }).catch(() => setError('Camera permission was denied or no camera is available.')); return () => stream?.getTracks().forEach(t => t.stop()) }, [])
+  const snap = () => { const c = canvas.current; c.width = video.current.videoWidth; c.height = video.current.videoHeight; c.getContext('2d').drawImage(video.current, 0, 0); c.toBlob(b => b && captured(new File([b], `camera-${Date.now()}.jpg`, { type: 'image/jpeg' })), 'image/jpeg', .92) }
+  return <div className="modal"><div className="modal-box"><button className="close" onClick={close}>×</button><h2>Capture nameplate</h2>{error ? <p className="error">{error}</p> : <video ref={video} autoPlay playsInline />}<canvas ref={canvas} hidden />{!error && <button className="primary" onClick={snap}>Take snapshot</button>}</div></div>
 }
 
-export default App
+function AddItem({ workspace, refresh }) {
+  const input = useRef(null); const [camera, setCamera] = useState(false), [error, setError] = useState('')
+  const upload = async file => { if (!file) return; setError(''); const form = new FormData(); form.append('image', file); try { const r = await fetch(`${API}/workspaces/${workspace.id}/items`, { method: 'POST', body: form }); const b = await r.json(); if (!r.ok) throw new Error(b.detail || 'Upload failed.'); refresh() } catch (e) { setError(e.message) } }
+  return <><div className="add-item"><input ref={input} type="file" accept="image/jpeg,image/png,image/webp" onChange={e => upload(e.target.files?.[0])} /><button onClick={() => input.current.click()}><span>↑</span><b>Upload image</b><small>JPEG, PNG, WebP · 10 MB max</small></button><button onClick={() => setCamera(true)}><span>◉</span><b>Use camera</b><small>Capture a live nameplate</small></button></div>{error && <p className="error">{error}</p>}{camera && <Camera close={() => setCamera(false)} captured={f => { setCamera(false); upload(f) }} />}</>
+}
+
+function Workspace({ workspace, back, openItem }) {
+  const [items, setItems] = useState([]), [error, setError] = useState('')
+  const refresh = async () => { try { const r = await fetch(`${API}/workspaces/${workspace.id}/items`), b = await r.json(); if (!r.ok) throw new Error(b.detail); setItems(b.items || []) } catch (e) { setError(e.message) } }
+  useEffect(() => { refresh(); const t = setInterval(refresh, 2500); return () => clearInterval(t) }, [workspace.id])
+  const excel = async () => { try { const r = await fetch(`${API}/workspaces/${workspace.id}/export.xlsx`); if (!r.ok) throw new Error('Could not create Excel file.'); const url = URL.createObjectURL(await r.blob()), a = document.createElement('a'); a.href = url; a.download = `${workspace.name}-export.xlsx`; a.click(); URL.revokeObjectURL(url) } catch (e) { setError(e.message) } }
+  return <main><header><button className="text-button" onClick={back}>← Workspaces</button><div><p className="eyebrow">Workspace</p><h1>{workspace.name}</h1></div><button className="secondary" onClick={excel}>↓ Create Excel</button></header><AddItem workspace={workspace} refresh={refresh} />{error && <p className="error">{error}</p>}<section><div className="section-title"><div><p className="eyebrow">Inventory</p><h2>Items</h2></div><span>{items.length} total</span></div>{items.length ? <div className="grid">{items.map(i => <button className="item-card" key={i.id} onClick={() => openItem(i.id)}><div className="thumb">{i.image_urls?.[0] ? <img src={`${API}${i.image_urls[0]}`} alt="" /> : '◈'}</div><Status status={i.status} /><h3>{i.name}</h3><div className="meter"><i style={{ width: `${i.completeness_score}%` }} /></div><small>{i.completeness_score}% complete · updated {date(i.updated_at)}</small></button>)}</div> : <div className="empty"><b>Your workspace is ready.</b><p>Upload or capture a product label to create the first item.</p></div>}</section></main>
+}
+
+function ReviewField({ field, itemId, reloaded }) {
+  const [open, setOpen] = useState(false), [manual, setManual] = useState(''), [busy, setBusy] = useState(false)
+  const submit = async (action, chosen_value) => { setBusy(true); try { const r = await fetch(`${API}/items/${itemId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ field_name: field.field_name, action, chosen_value, actor: 'local_user' }) }), b = await r.json(); if (!r.ok) throw new Error(b.detail); reloaded() } catch (e) { alert(e.message) } finally { setBusy(false) } }
+  const choices = (field.conflicting_values || []).map(v => typeof v === 'object' ? v.value : v)
+  return <article className="field"><button className="field-row" onClick={() => setOpen(!open)}><div><b>{label(field.field_name)}</b><strong>{field.value}</strong></div><div><span className={`confidence ${field.confidence >= .7 ? 'high' : 'low'}`}>{Math.round(field.confidence * 100)}%</span><small>{label(field.source_type)}</small></div><i>⌄</i></button>{open && <div className="field-detail"><p><b>Source:</b> {field.source_reference || 'Not provided'}</p>{(field.confidence < .7 || choices.length > 0) && <div className="review"><b>Needs review</b><button disabled={busy} onClick={() => submit('accept_current')}>Accept as-is</button>{choices.map(v => <button disabled={busy} key={v} onClick={() => submit('accept_alternate', v)}>Use “{v}”</button>)}<div><input value={manual} onChange={e => setManual(e.target.value)} placeholder="Enter correction" /><button disabled={busy || !manual.trim()} onClick={() => submit('manual_edit', manual)}>Save</button></div></div>}</div>}</article>
+}
+
+function ItemDetail({ itemId, back }) {
+  const [item, setItem] = useState(null), [activity, setActivity] = useState([]), [name, setName] = useState(''), [error, setError] = useState('')
+  const load = async () => { try { const [ir, ar] = await Promise.all([fetch(`${API}/items/${itemId}`), fetch(`${API}/items/${itemId}/activity`)]), i = await ir.json(), a = await ar.json(); if (!ir.ok) throw new Error(i.detail); setItem(i); setName(i.name); setActivity(a.activity || []) } catch (e) { setError(e.message) } }
+  useEffect(() => { load() }, [itemId])
+  const rename = async () => { if (!name.trim() || name === item.name) return; try { const r = await fetch(`${API}/items/${itemId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, actor: 'local_user' }) }); if (!r.ok) throw new Error((await r.json()).detail); load() } catch (e) { setError(e.message) } }
+  if (!item) return <main><button className="text-button" onClick={back}>← Back</button><p>{error || 'Loading item…'}</p></main>
+  return <main><header><button className="text-button" onClick={back}>← Workspace</button><Status status={item.status} /></header><section className="detail-head">{item.image_urls?.[0] && <img src={`${API}${item.image_urls[0]}`} alt={item.name} />}<div><p className="eyebrow">Item record</p><input className="name-input" value={name} onChange={e => setName(e.target.value)} onBlur={rename} /><p>{item.completeness_score}% complete · created {date(item.created_at)}</p></div></section>{error && <p className="error">{error}</p>}<div className="detail-grid"><section><div className="section-title"><div><p className="eyebrow">Field-level evidence</p><h2>Specifications</h2></div><span>{item.fields.length} fields</span></div>{item.fields.length ? item.fields.map(f => <ReviewField key={f.id} field={f} itemId={item.id} reloaded={load} />) : <div className="empty">No fields were found. Try a clearer label image.</div>}</section><aside className="activity"><p className="eyebrow">Audit trail</p><h2>Activity</h2>{activity.length ? activity.map(l => <div key={l.id}><b>{l.actor}</b> {l.action.replaceAll('_', ' ')}{l.field_name && <> <em>{label(l.field_name)}</em></>}{l.old_value && <> from “{l.old_value}”</>}{l.new_value && <> to “{l.new_value}”</>}<small>{date(l.timestamp)}</small></div>) : <p>No activity yet.</p>}</aside></div></main>
+}
+
+export default function App() {
+  const [spaces, setSpaces] = useState([]), [active, setActive] = useState(null), [itemId, setItemId] = useState(null), [newName, setNewName] = useState(''), [error, setError] = useState('')
+  const load = async () => { try { const r = await fetch(`${API}/workspaces`), b = await r.json(); if (!r.ok) throw new Error(b.detail); setSpaces(b) } catch (e) { setError(`Backend unavailable: ${e.message}`) } }
+  useEffect(() => { load() }, [])
+  const create = async e => { e.preventDefault(); if (!newName.trim()) return; try { const r = await fetch(`${API}/workspaces`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: newName.trim() }) }), b = await r.json(); if (!r.ok) throw new Error(b.detail); setNewName(''); setActive(b); load() } catch (e) { setError(e.message) } }
+  if (itemId) return <ItemDetail itemId={itemId} back={() => setItemId(null)} />
+  if (active) return <Workspace workspace={active} back={() => { setActive(null); load() }} openItem={setItemId} />
+  return <main><header><div><p className="eyebrow">Snap to Intelligence</p><h1>Your equipment workspace</h1></div><span className="brand-mark">◈</span></header><section className="intro"><h2>Capture equipment knowledge, <em>one label at a time.</em></h2><p>Create a workspace for a room, department, or site. Each photo becomes a traceable, reviewable equipment record.</p><form onSubmit={create}><input value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. IT Equipment – Floor 2" /><button className="primary">Create workspace →</button></form>{error && <p className="error">{error}</p>}</section><section><div className="section-title"><div><p className="eyebrow">Your spaces</p><h2>Workspaces</h2></div><span>{spaces.length} total</span></div>{spaces.length ? <div className="grid">{spaces.map(s => <button className="workspace-card" onClick={() => setActive(s)} key={s.id}><span>▣</span><h3>{s.name}</h3><p>{s.item_count} item{s.item_count === 1 ? '' : 's'}</p><small>Created {date(s.created_at)} →</small></button>)}</div> : <div className="empty"><b>No workspaces yet.</b><p>Create one above to begin building your equipment inventory.</p></div>}</section></main>
+}
